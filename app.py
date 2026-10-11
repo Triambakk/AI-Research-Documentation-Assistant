@@ -91,17 +91,17 @@ if uploaded_file is not None:
             else:
                 try:
                     with st.spinner("Finding relevant passages..."):
+                        # No hard similarity cutoff: avoid rejecting
+                        # valid questions just because wording differs.
                         retrieved_chunks = retriever.search(
                             question,
                             top_k=3,
-                            min_score=0.35,
                         )
 
                     if not retrieved_chunks:
                         st.warning(
-                            "I couldn't find sufficiently relevant "
-                            "passages in this document to answer that "
-                            "question. Try rephrasing it."
+                            "No passages could be retrieved from "
+                            "this document. Try rephrasing the question."
                         )
                     else:
                         with st.spinner("Generating answer with Gemini..."):
@@ -114,14 +114,29 @@ if uploaded_file is not None:
                         st.subheader("Answer")
                         st.write(answer)
 
-                        st.subheader("Retrieved source passages")
+                        st.subheader("Sources")
+                        st.caption(
+                            "These passages were retrieved as context "
+                            "for the answer. Check them against the "
+                            "document to verify the information."
+                        )
 
-                        for chunk in retrieved_chunks:
+                        for index, chunk in enumerate(
+                            retrieved_chunks,
+                            start=1,
+                        ):
                             with st.expander(
-                                f"Page {chunk['page_number']} "
-                                f"· Similarity {chunk['score']:.3f}"
+                                f"Source {index} · "
+                                f"Page {chunk['page_number']}"
                             ):
+                                st.markdown(
+                                    f"**Page {chunk['page_number']}**"
+                                )
                                 st.write(chunk["text"])
+                                st.caption(
+                                    "Retrieval similarity score: "
+                                    f"{chunk['score']:.3f}"
+                                )
 
                 except Exception as error:
                     st.error(
