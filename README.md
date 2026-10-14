@@ -28,9 +28,6 @@ A simple web app that lets you upload a PDF document and ask questions about its
 4. **Retrieve**: When you submit a question, FAISS finds the top 3 most relevant chunks.
 5. **Generate**: The question and the retrieved excerpts are sent to Gemini, which returns an answer based only on the provided context.
 
-## Screenshot
-
-![Application Screenshot](docs/screenshot.png)
 
 ## How to Run
 
